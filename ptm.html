@@ -36,9 +36,8 @@
     links.push('paytmmp://chat?featuretype=start_chat&userType=VPA&vpa=' + vpa + '&txnCategory=VPA2VPA&amount=' + am + '&source=deeplink');
   }
 
-  // Fallback: direct pay
-  var payVpa = vpa || 'pradyut@idfcbank';
-  links.push('intent://pay?pa=' + payVpa + '&pn=' + encodeURIComponent(name) + '&am=' + am + '&cu=INR#Intent;scheme=upi;package=net.one97.paytm;end');
+  // Fallback: chat via intent (Android)
+  links.push('intent://chat?featuretype=start_chat&phone=' + phone + '&phoneName=' + encodeURIComponent(name) + '&amount=' + am + '&source=deeplink#Intent;scheme=paytmmp;package=net.one97.paytm;end');
 
   var tried = 0;
 
