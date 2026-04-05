@@ -24,16 +24,13 @@
   var name = p.get('pn') || 'ABHI ARORA';
   var am = p.get('am') || '1';
 
-  var mid = p.get('mid') || '';
-  var mtid = p.get('mtid') || '';
-
   var links = [];
 
-  // 1. Replicate the exact UPI QR string format with mid — forces merchant mode + has amount
-  links.push('intent://pay?ver=01&mode=01&orgid=180071&pa=' + vpa + '&pn=' + encodeURIComponent(name) + '&mc=5631&mid=' + mid + '&mtid=' + mtid + '&qrMedium=04&am=' + am + '&cu=INR#Intent;scheme=upi;package=net.one97.paytm;end');
+  // 1. cashier_page with vpa — stays on payment page (confirmed working)
+  links.push('paytmmp://cashier_page?vpa=' + vpa + '&name=' + encodeURIComponent(name) + '&am=' + am);
 
-  // 2. Direct paytmmp scheme with same params
-  links.push('paytmmp://pay?ver=01&mode=01&orgid=180071&pa=' + vpa + '&pn=' + encodeURIComponent(name) + '&mc=5631&mid=' + mid + '&mtid=' + mtid + '&qrMedium=04&am=' + am + '&cu=INR');
+  // 2. Intent fallback
+  links.push('intent://cashier_page?vpa=' + vpa + '&name=' + encodeURIComponent(name) + '&am=' + am + '#Intent;scheme=paytmmp;package=net.one97.paytm;end');
 
   var tried = 0;
 
