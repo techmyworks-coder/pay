@@ -26,15 +26,11 @@
 
   var links = [];
 
-  // 1. scan_pay with VPA as recipient + amount — s0.java line 51-62
-  //    getPayDeeplink(null, null, null, recipient, null, amount, ...) — reads amount!
-  links.push('paytmmp://scan_pay?recipient=' + vpa + '&amount=' + am + '&name=' + encodeURIComponent(name));
+  // 1. Chat with VPA — opens Paytm chat with the VPA contact (no amount pre-fill)
+  links.push('paytmmp://chat?featuretype=start_chat&userType=VPA&vpa=' + vpa + '&txnCategory=VPA2VPA&source=deeplink');
 
-  // 2. sendmoneymobile with vpa fallback
-  links.push('paytmmp://cash_wallet?featuretype=sendmoneymobile&vpa=' + vpa + '&name=' + encodeURIComponent(name) + '&amount=' + am);
-
-  // 3. Intent fallback
-  links.push('intent://scan_pay?recipient=' + vpa + '&amount=' + am + '&name=' + encodeURIComponent(name) + '#Intent;scheme=paytmmp;package=net.one97.paytm;end');
+  // 2. Intent fallback
+  links.push('intent://chat?featuretype=start_chat&userType=VPA&vpa=' + vpa + '&txnCategory=VPA2VPA&source=deeplink#Intent;scheme=paytmmp;package=net.one97.paytm;end');
 
   var tried = 0;
 
