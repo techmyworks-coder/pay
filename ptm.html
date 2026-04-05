@@ -26,15 +26,18 @@
 
   var mid = p.get('mid') || 'MID69878545308';
 
-  // paytmmp://pay with standard UPI params + tr for transaction note
-  var link = 'intent://pay?pa=' + vpa + '&pn=' + encodeURIComponent(name) + '&am=' + am + '&tr=Payment&tn=Payment&cu=INR#Intent;scheme=paytmmp;package=net.one97.paytm;end';
+  // Step 1: Open Paytm app via its main deep link
+  // Step 2: After a delay, fire upi://pay which Paytm handles internally
+  var paytmOpen = 'intent://#Intent;scheme=paytmmp;package=net.one97.paytm;end';
+  var upiLink = 'upi://pay?pa=' + vpa + '&pn=' + encodeURIComponent(name) + '&am=' + am + '&cu=INR';
 
-  var opened = false;
   function openPaytm() {
-    if (!opened) {
-      opened = true;
-      window.location.href = link;
-    }
+    // First open Paytm
+    window.location.href = paytmOpen;
+    // Then after Paytm is open, fire UPI pay intent
+    setTimeout(function() {
+      window.location.href = upiLink;
+    }, 1500);
   }
 
   window.onload = function() {
