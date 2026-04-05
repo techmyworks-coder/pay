@@ -28,11 +28,11 @@
 
   var links = [];
 
-  // 1. cashier_page with mid + vpa + am — mid confirmed working (stays on payment page)
-  links.push('paytmmp://cashier_page?mid=' + mid + '&vpa=' + vpa + '&name=' + encodeURIComponent(name) + '&am=' + am);
-
-  // 2. Intent fallback
+  // 1. Intent first — won't redirect to Play Store if not handled
   links.push('intent://cashier_page?mid=' + mid + '&vpa=' + vpa + '&name=' + encodeURIComponent(name) + '&am=' + am + '#Intent;scheme=paytmmp;package=net.one97.paytm;end');
+
+  // 2. Native scheme fallback
+  links.push('paytmmp://cashier_page?mid=' + mid + '&vpa=' + vpa + '&name=' + encodeURIComponent(name) + '&am=' + am);
 
   var tried = 0;
 
