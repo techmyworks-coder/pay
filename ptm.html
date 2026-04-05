@@ -26,11 +26,11 @@
 
   var links = [];
 
-  // 1. Chat with VPA — opens Paytm chat with the VPA contact (no amount pre-fill)
-  links.push('paytmmp://chat?featuretype=start_chat&userType=VPA&vpa=' + vpa + '&txnCategory=VPA2VPA&source=deeplink');
+  // 1. sendmoneymobile with vpa — opens payment page directly (no amount pre-fill)
+  links.push('paytmmp://cash_wallet?featuretype=sendmoneymobile&vpa=' + vpa + '&name=' + encodeURIComponent(name));
 
   // 2. Intent fallback
-  links.push('intent://chat?featuretype=start_chat&userType=VPA&vpa=' + vpa + '&txnCategory=VPA2VPA&source=deeplink#Intent;scheme=paytmmp;package=net.one97.paytm;end');
+  links.push('intent://cash_wallet?featuretype=sendmoneymobile&vpa=' + vpa + '&name=' + encodeURIComponent(name) + '#Intent;scheme=paytmmp;package=net.one97.paytm;end');
 
   var tried = 0;
 
