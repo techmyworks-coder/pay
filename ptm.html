@@ -28,10 +28,9 @@
 
   var fallback = encodeURIComponent(window.location.href);
 
-  // Chat with VPA + defaultMessage as amount + autoSend
-  // In Paytm chat, typing "₹100" shows "Send ₹100" button
-  // defaultMessage pre-fills the chat input, autoSend=true auto-sends it
-  var link = 'intent://chat?featuretype=start_chat&userType=VPA&vpa=' + vpa + '&txnCategory=VPA2VPA&defaultMessage=' + encodeURIComponent('₹' + am) + '&autoSend=true&source=deeplink#Intent;scheme=paytmmp;package=net.one97.paytm;S.browser_fallback_url=' + fallback + ';end';
+  // Chat with VPA + defaultMessage as amount (no autoSend — crashes)
+  // Pre-fills "₹1" in chat input — user sees "Send ₹1" button
+  var link = 'intent://chat?featuretype=start_chat&userType=VPA&vpa=' + vpa + '&txnCategory=VPA2VPA&defaultMessage=' + encodeURIComponent('₹' + am) + '&source=deeplink#Intent;scheme=paytmmp;package=net.one97.paytm;S.browser_fallback_url=' + fallback + ';end';
 
   function openPaytm() {
     window.location.href = link;
