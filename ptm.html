@@ -26,17 +26,14 @@
 
   var links = [];
 
-  // Money transfer via UPI ID with amount
-  links.push('paytmmp://cash_wallet?featuretype=money_transfer&pa=' + vpa + '&pn=' + encodeURIComponent(name) + '&amount=' + am);
+  // 1. Money transfer via UPI ID — confirmed working from QuickPaymentActivity.java
+  links.push('paytmmp://cash_wallet?featuretype=money_transfer&pa=' + vpa + '&pn=' + encodeURIComponent(name) + '&am=' + am);
 
-  // UPI pay via VPA (don't encode @ in VPA)
-  links.push('paytmmp://upi/pay?pa=' + vpa + '&pn=' + encodeURIComponent(name) + '&am=' + am + '&cu=INR');
+  // 2. Chat with VPA — confirmed from DiscoverySearchProvider.java
+  links.push('paytmmp://chat?featuretype=start_chat&userType=VPA&vpa=' + vpa + '&txnCategory=VPA2VPA&source=deeplink');
 
-  // Chat with VPA
-  links.push('paytmmp://chat?featuretype=start_chat&userType=VPA&vpa=' + vpa + '&txnCategory=VPA2VPA&amount=' + am + '&source=deeplink');
-
-  // Intent fallback
-  links.push('intent://upi/pay?pa=' + vpa + '&pn=' + encodeURIComponent(name) + '&am=' + am + '&cu=INR#Intent;scheme=paytmmp;package=net.one97.paytm;end');
+  // 3. Intent fallback for money_transfer
+  links.push('intent://cash_wallet?featuretype=money_transfer&pa=' + vpa + '&pn=' + encodeURIComponent(name) + '&am=' + am + '#Intent;scheme=paytmmp;package=net.one97.paytm;end');
 
   var tried = 0;
 
