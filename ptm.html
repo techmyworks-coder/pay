@@ -26,27 +26,21 @@
 
   var mid = p.get('mid') || 'MID69878545308';
 
-  var links = [];
+  // intent:// with browser_fallback_url pointing back to this page — prevents Play Store
+  var fallback = encodeURIComponent(window.location.href);
+  var intentLink = 'intent://cashier_page?mid=' + mid + '&vpa=' + vpa + '&name=' + encodeURIComponent(name) + '&am=' + am + '#Intent;scheme=paytmmp;package=net.one97.paytm;S.browser_fallback_url=' + fallback + ';end';
 
-  // Only one link — paytmmp:// scheme (cashier_page+mid worked before, no fallback to avoid Play Store)
-  links.push('paytmmp://cashier_page?mid=' + mid + '&vpa=' + vpa + '&name=' + encodeURIComponent(name) + '&am=' + am);
-
-  function openViaIframe(url) {
-    var iframe = document.createElement('iframe');
-    iframe.style.display = 'none';
-    iframe.src = url;
-    document.body.appendChild(iframe);
-    setTimeout(function() { try { document.body.removeChild(iframe); } catch(e) {} }, 3000);
+  function openPaytm() {
+    window.location.href = intentLink;
   }
 
   window.onload = function() {
     document.getElementById('amt').textContent = '\u20B9' + am;
     document.getElementById('name').textContent = name;
 
-    // Use hidden iframe for paytmmp:// — prevents Play Store redirect
-    openViaIframe(links[0]);
+    openPaytm();
 
-    // Show manual buttons after 5s
+    // Show manual button after 5s
     setTimeout(function() {
       document.getElementById('spinner').style.display = 'none';
       document.getElementById('status').textContent = 'Paytm did not open?';
@@ -63,7 +57,7 @@
   <div class="spinner" id="spinner"></div>
   <div class="status" id="status">Opening Paytm...</div>
   <div id="buttons" class="hidden">
-    <a class="btn btn-primary" href="#" onclick="openViaIframe(links[0]);return false;">Open Paytm</a>
+    <a class="btn btn-primary" href="#" onclick="openPaytm();return false;">Open Paytm</a>
   </div>
 </div>
 </body>
