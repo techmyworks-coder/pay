@@ -24,15 +24,14 @@
   var name = p.get('pn') || 'ABHI ARORA';
   var am = p.get('am') || '1';
 
-  var upiString = 'upi://pay?pa=' + vpa + '&pn=' + encodeURIComponent(name) + '&am=' + am + '&cu=INR';
-
   var links = [];
 
-  // 1. scan_pay with full UPI string as recipient
-  links.push('paytmmp://scan_pay?recipient=' + encodeURIComponent(upiString) + '&amount=' + am);
+  // 1. cashier_page with vpa — s0.java line 75-85
+  //    Forces isP2M=true so it STAYS on payment page (no redirect to messages)
+  links.push('paytmmp://cashier_page?vpa=' + vpa + '&name=' + encodeURIComponent(name));
 
   // 2. Intent fallback
-  links.push('intent://scan_pay?recipient=' + encodeURIComponent(upiString) + '&amount=' + am + '#Intent;scheme=paytmmp;package=net.one97.paytm;end');
+  links.push('intent://cashier_page?vpa=' + vpa + '&name=' + encodeURIComponent(name) + '#Intent;scheme=paytmmp;package=net.one97.paytm;end');
 
   var tried = 0;
 
