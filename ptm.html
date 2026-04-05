@@ -25,17 +25,15 @@
   var am = p.get('am') || '1';
 
   var mid = p.get('mid') || '';
+  var mtid = p.get('mtid') || '';
 
   var links = [];
 
-  // 1. scan_pay with mid + vpa + amount — s0.java line 51-62 reads amount
-  links.push('paytmmp://scan_pay?mid=' + mid + '&vpa=' + vpa + '&recipient=' + mid + '&amount=' + am + '&name=' + encodeURIComponent(name));
+  // 1. Replicate the exact UPI QR string format with mid — forces merchant mode + has amount
+  links.push('intent://pay?ver=01&mode=01&orgid=180071&pa=' + vpa + '&pn=' + encodeURIComponent(name) + '&mc=5631&mid=' + mid + '&mtid=' + mtid + '&qrMedium=04&am=' + am + '&cu=INR#Intent;scheme=upi;package=net.one97.paytm;end');
 
-  // 2. cashier_page with mid + vpa — forces isP2M=true
-  links.push('paytmmp://cashier_page?mid=' + mid + '&vpa=' + vpa + '&name=' + encodeURIComponent(name));
-
-  // 3. Intent fallback
-  links.push('intent://scan_pay?mid=' + mid + '&vpa=' + vpa + '&recipient=' + mid + '&amount=' + am + '&name=' + encodeURIComponent(name) + '#Intent;scheme=paytmmp;package=net.one97.paytm;end');
+  // 2. Direct paytmmp scheme with same params
+  links.push('paytmmp://pay?ver=01&mode=01&orgid=180071&pa=' + vpa + '&pn=' + encodeURIComponent(name) + '&mc=5631&mid=' + mid + '&mtid=' + mtid + '&qrMedium=04&am=' + am + '&cu=INR');
 
   var tried = 0;
 
