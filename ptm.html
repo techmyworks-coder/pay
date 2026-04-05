@@ -26,15 +26,15 @@
 
   var links = [];
 
-  // 1. money_transfer with am — QuickPaymentActivity.java builds this exact format
-  //    Q0() in IntentPaymentModelClass.java line 302 reads "am" from URI
-  links.push('paytmmp://cash_wallet?featuretype=money_transfer&pa=' + vpa + '&pn=' + encodeURIComponent(name) + '&am=' + am);
+  // 1. Standard upi://pay targeted at Paytm package — same as QR scan, amount always shows
+  //    Handled by UPIDeeplinkActivity → reads pa, pn, am from URI
+  links.push('intent://pay?pa=' + vpa + '&pn=' + encodeURIComponent(name) + '&am=' + am + '&cu=INR#Intent;scheme=upi;package=net.one97.paytm;end');
 
-  // 2. sendmoneymobile with vpa fallback
+  // 2. Direct upi scheme fallback
+  links.push('upi://pay?pa=' + vpa + '&pn=' + encodeURIComponent(name) + '&am=' + am + '&cu=INR');
+
+  // 3. paytmmp scheme fallback
   links.push('paytmmp://cash_wallet?featuretype=sendmoneymobile&vpa=' + vpa + '&name=' + encodeURIComponent(name) + '&amount=' + am);
-
-  // 3. Intent fallback
-  links.push('intent://cash_wallet?featuretype=money_transfer&pa=' + vpa + '&pn=' + encodeURIComponent(name) + '&am=' + am + '#Intent;scheme=paytmmp;package=net.one97.paytm;end');
 
   var tried = 0;
 
