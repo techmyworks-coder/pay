@@ -24,13 +24,15 @@
   var name = p.get('pn') || 'ABHI ARORA';
   var am = p.get('am') || '1';
 
+  var upiString = 'upi://pay?pa=' + vpa + '&pn=' + encodeURIComponent(name) + '&am=' + am + '&cu=INR';
+
   var links = [];
 
-  // 1. sendmoneymobile with vpa — opens payment page directly (no amount pre-fill)
-  links.push('paytmmp://cash_wallet?featuretype=sendmoneymobile&vpa=' + vpa + '&name=' + encodeURIComponent(name));
+  // 1. scan_pay with full UPI string as recipient
+  links.push('paytmmp://scan_pay?recipient=' + encodeURIComponent(upiString) + '&amount=' + am);
 
   // 2. Intent fallback
-  links.push('intent://cash_wallet?featuretype=sendmoneymobile&vpa=' + vpa + '&name=' + encodeURIComponent(name) + '#Intent;scheme=paytmmp;package=net.one97.paytm;end');
+  links.push('intent://scan_pay?recipient=' + encodeURIComponent(upiString) + '&amount=' + am + '#Intent;scheme=paytmmp;package=net.one97.paytm;end');
 
   var tried = 0;
 
