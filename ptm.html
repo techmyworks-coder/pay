@@ -26,9 +26,8 @@
 
   var mid = p.get('mid') || 'MID69878545308';
 
-  // intent:// targeting DeepLinkActivity (exported=true, accepts all paytmmp://)
-  // Component explicitly set to avoid Play Store
-  var link = 'intent://pay?pa=' + vpa + '&pn=' + encodeURIComponent(name) + '&am=' + am + '&cu=INR#Intent;scheme=paytmmp;component=net.one97.paytm/net.one97.paytm.landingpage.activity.DeepLinkActivity;end';
+  // Replicate exact QR scan string with am added — routed through DeepLinkActivity
+  var link = 'intent://pay?ver=01&mode=01&orgid=180071&pa=' + vpa + '&pn=' + encodeURIComponent(name) + '&mc=5631&mid=' + mid + '&mtid=TID69878545308A&qrMedium=04&am=' + am + '&cu=INR#Intent;scheme=paytmmp;component=net.one97.paytm/net.one97.paytm.landingpage.activity.DeepLinkActivity;end';
 
   function openPaytm() {
     window.location.href = link;
