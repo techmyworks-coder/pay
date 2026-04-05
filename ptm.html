@@ -28,10 +28,7 @@
 
   var links = [];
 
-  // 1. Intent first — won't redirect to Play Store if not handled
-  links.push('intent://cashier_page?mid=' + mid + '&vpa=' + vpa + '&name=' + encodeURIComponent(name) + '&am=' + am + '#Intent;scheme=paytmmp;package=net.one97.paytm;end');
-
-  // 2. Native scheme fallback
+  // Only one link — paytmmp:// scheme (cashier_page+mid worked before, no fallback to avoid Play Store)
   links.push('paytmmp://cashier_page?mid=' + mid + '&vpa=' + vpa + '&name=' + encodeURIComponent(name) + '&am=' + am);
 
   var tried = 0;
