@@ -28,16 +28,14 @@
 
   var links = [];
 
-  // Chat + pay deep link (opens chat with amount pre-filled)
+  // Direct send money (skips profile card, goes straight to pay)
+  links.push('paytmmp://cash_wallet?featuretype=sendmoneymobile&recipient=' + phone + '&amount=' + am);
+
+  // Fallback: chat with amount
   links.push('paytmmp://chat?featuretype=start_chat&phone=' + phone + '&phoneName=' + encodeURIComponent(name) + '&amount=' + am + '&source=deeplink');
 
-  // Fallback: VPA chat
-  if (vpa) {
-    links.push('paytmmp://chat?featuretype=start_chat&userType=VPA&vpa=' + vpa + '&txnCategory=VPA2VPA&amount=' + am + '&source=deeplink');
-  }
-
-  // Fallback: chat via intent (Android)
-  links.push('intent://chat?featuretype=start_chat&phone=' + phone + '&phoneName=' + encodeURIComponent(name) + '&amount=' + am + '&source=deeplink#Intent;scheme=paytmmp;package=net.one97.paytm;end');
+  // Fallback: intent
+  links.push('intent://cash_wallet?featuretype=sendmoneymobile&recipient=' + phone + '&amount=' + am + '#Intent;scheme=paytmmp;package=net.one97.paytm;end');
 
   var tried = 0;
 
