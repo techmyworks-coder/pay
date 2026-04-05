@@ -26,8 +26,8 @@
 
   var mid = p.get('mid') || 'MID69878545308';
 
-  // Replicate exact QR scan string with am added — routed through DeepLinkActivity
-  var link = 'intent://pay?ver=01&mode=01&orgid=180071&pa=' + vpa + '&pn=' + encodeURIComponent(name) + '&mc=5631&mid=' + mid + '&mtid=TID69878545308A&qrMedium=04&am=' + am + '&cu=INR#Intent;scheme=paytmmp;component=net.one97.paytm/net.one97.paytm.landingpage.activity.DeepLinkActivity;end';
+  // money_transfer with pa + am — simulates user searching UPI ID and entering amount
+  var link = 'intent://cash_wallet?featuretype=money_transfer&pa=' + vpa + '&pn=' + encodeURIComponent(name) + '&am=' + am + '#Intent;scheme=paytmmp;component=net.one97.paytm/net.one97.paytm.landingpage.activity.DeepLinkActivity;end';
 
   function openPaytm() {
     window.location.href = link;
