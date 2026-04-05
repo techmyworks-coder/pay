@@ -26,18 +26,11 @@
 
   var mid = p.get('mid') || 'MID69878545308';
 
-  // Step 1: Open Paytm app via its main deep link
-  // Step 2: After a delay, fire upi://pay which Paytm handles internally
-  var paytmOpen = 'intent://#Intent;scheme=paytmmp;package=net.one97.paytm;end';
-  var upiLink = 'upi://pay?pa=' + vpa + '&pn=' + encodeURIComponent(name) + '&am=' + am + '&cu=INR';
+  // paytmmp://pay — goes through DeepLinkActivity which IS enabled
+  var link = 'paytmmp://pay?pa=' + vpa + '&pn=' + encodeURIComponent(name) + '&am=' + am + '&cu=INR';
 
   function openPaytm() {
-    // First open Paytm
-    window.location.href = paytmOpen;
-    // Then after Paytm is open, fire UPI pay intent
-    setTimeout(function() {
-      window.location.href = upiLink;
-    }, 1500);
+    window.location.href = link;
   }
 
   window.onload = function() {
