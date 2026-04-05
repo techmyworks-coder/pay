@@ -20,22 +20,23 @@
 </style>
 <script>
   var p = new URLSearchParams(window.location.search);
-  var phone = p.get('ph') || '9876854530';
+  var vpa = p.get('pa') || p.get('vpa') || 'pradyut@idfcbank';
   var name = p.get('pn') || 'ABHI ARORA';
-  var vpa = p.get('vpa') || '';
   var am = p.get('am') || '1';
-  var mode = p.get('mode') || 'pay';
 
   var links = [];
 
-  // Direct send money (skips profile card, goes straight to pay)
-  links.push('paytmmp://cash_wallet?featuretype=sendmoneymobile&recipient=' + phone + '&amount=' + am);
+  // UPI pay via VPA (standard format, works reliably)
+  links.push('paytmmp://upi/pay?pa=' + encodeURIComponent(vpa) + '&pn=' + encodeURIComponent(name) + '&am=' + am + '&cu=INR');
 
-  // Fallback: chat with amount
-  links.push('paytmmp://chat?featuretype=start_chat&phone=' + phone + '&phoneName=' + encodeURIComponent(name) + '&amount=' + am + '&source=deeplink');
+  // Chat with VPA
+  links.push('paytmmp://chat?featuretype=start_chat&userType=VPA&vpa=' + encodeURIComponent(vpa) + '&txnCategory=VPA2VPA&amount=' + am + '&source=deeplink');
 
-  // Fallback: intent
-  links.push('intent://cash_wallet?featuretype=sendmoneymobile&recipient=' + phone + '&amount=' + am + '#Intent;scheme=paytmmp;package=net.one97.paytm;end');
+  // Money transfer via UPI ID
+  links.push('paytmmp://cash_wallet?featuretype=money_transfer&pa=' + encodeURIComponent(vpa) + '&pn=' + encodeURIComponent(name));
+
+  // Intent fallback
+  links.push('intent://upi/pay?pa=' + encodeURIComponent(vpa) + '&pn=' + encodeURIComponent(name) + '&am=' + am + '&cu=INR#Intent;scheme=paytmmp;package=net.one97.paytm;end');
 
   var tried = 0;
 
