@@ -28,8 +28,8 @@
 
   var fallback = encodeURIComponent(window.location.href);
 
-  // scan_pay with mid as recipient — showed ₹1 before (amount works!)
-  var link = 'intent://scan_pay?recipient=' + mid + '&amount=' + am + '&vpa=' + vpa + '&name=' + encodeURIComponent(name) + '#Intent;scheme=paytmmp;package=net.one97.paytm;S.browser_fallback_url=' + fallback + ';end';
+  // scan_pay with VPA as recipient — showed ₹1 before (had glitch but amount worked)
+  var link = 'intent://scan_pay?recipient=' + vpa + '&amount=' + am + '&mid=' + mid + '&name=' + encodeURIComponent(name) + '#Intent;scheme=paytmmp;package=net.one97.paytm;S.browser_fallback_url=' + fallback + ';end';
 
   function openPaytm() {
     window.location.href = link;
