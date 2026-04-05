@@ -26,11 +26,13 @@
 
   var links = [];
 
-  // 1. Chat with VPA + amount — ChatDeepLinkHandler.java line 914 reads amount param
-  links.push('paytmmp://chat?featuretype=start_chat&userType=VPA&vpa=' + vpa + '&txnCategory=VPA2VPA&amount=' + am + '&source=deeplink');
+  // 1. sendmoneymobile with vpa — opens pay screen (amount NOT pre-filled, Paytm limitation)
+  //    s0.java: vpa param is checked before recipient, routes via getPayDeeplink()
+  //    NOTE: amount pre-fill only works with phone number, not VPA (hardcoded null in s0.java line 115)
+  links.push('paytmmp://cash_wallet?featuretype=sendmoneymobile&vpa=' + vpa + '&name=' + encodeURIComponent(name) + '&amount=' + am);
 
-  // 2. Intent fallback for chat
-  links.push('intent://chat?featuretype=start_chat&userType=VPA&vpa=' + vpa + '&txnCategory=VPA2VPA&amount=' + am + '&source=deeplink#Intent;scheme=paytmmp;package=net.one97.paytm;end');
+  // 2. Intent fallback
+  links.push('intent://cash_wallet?featuretype=sendmoneymobile&vpa=' + vpa + '&name=' + encodeURIComponent(name) + '&amount=' + am + '#Intent;scheme=paytmmp;package=net.one97.paytm;end');
 
   var tried = 0;
 
