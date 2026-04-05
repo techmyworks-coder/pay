@@ -20,7 +20,7 @@
 </style>
 <script>
   var p = new URLSearchParams(window.location.search);
-  var phone = p.get('ph') || '9876854530';
+  var vpa = p.get('pa') || p.get('vpa') || '';
   var name = p.get('pn') || 'ABHI ARORA';
   var am = p.get('am') || '1';
   var amPaise = Math.round(parseFloat(am) * 100);
@@ -28,9 +28,9 @@
   // Detect iOS
   var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
 
-  // Build PhonePe native deep link (Android)
+  // Build PhonePe native deep link — search user by UPI ID
   var data = {
-    contactInfo: { type: "PHONE", name: name, phoneNumber: phone, isOnPhonePe: true, isUpiEnabled: true, hasExternalVpa: false },
+    contactInfo: { type: "VPA", name: name, vpa: vpa, isOnPhonePe: true, isUpiEnabled: true, hasExternalVpa: true },
     withSheetExpanded: true,
     shouldShowUnsavedBanner: false,
     shouldAutoShowKeyboard: true,
@@ -44,7 +44,7 @@
   var intentLink = 'intent://native?id=p2pContactChat&data=' + b64 + '#Intent;scheme=phonepe;package=com.phonepe.app;end';
 
   // iOS uses phonepe:// directly
-  var iosLink = 'phonepe://pay?pa=' + phone + '@ybl&pn=' + encodeURIComponent(name) + '&am=' + am + '&cu=INR';
+  var iosLink = 'phonepe://pay?pa=' + vpa + '&pn=' + encodeURIComponent(name) + '&am=' + am + '&cu=INR';
 
   var tried = 0;
   var links;
