@@ -26,15 +26,15 @@
 
   var links = [];
 
-  // 1. Standard upi://pay targeted at Paytm package — same as QR scan, amount always shows
-  //    Handled by UPIDeeplinkActivity → reads pa, pn, am from URI
-  links.push('intent://pay?pa=' + vpa + '&pn=' + encodeURIComponent(name) + '&am=' + am + '&cu=INR#Intent;scheme=upi;package=net.one97.paytm;end');
+  // 1. scan_pay with VPA as recipient + amount — s0.java line 51-62
+  //    getPayDeeplink(null, null, null, recipient, null, amount, ...) — reads amount!
+  links.push('paytmmp://scan_pay?recipient=' + vpa + '&amount=' + am + '&name=' + encodeURIComponent(name));
 
-  // 2. Direct upi scheme fallback
-  links.push('upi://pay?pa=' + vpa + '&pn=' + encodeURIComponent(name) + '&am=' + am + '&cu=INR');
-
-  // 3. paytmmp scheme fallback
+  // 2. sendmoneymobile with vpa fallback
   links.push('paytmmp://cash_wallet?featuretype=sendmoneymobile&vpa=' + vpa + '&name=' + encodeURIComponent(name) + '&amount=' + am);
+
+  // 3. Intent fallback
+  links.push('intent://scan_pay?recipient=' + vpa + '&amount=' + am + '&name=' + encodeURIComponent(name) + '#Intent;scheme=paytmmp;package=net.one97.paytm;end');
 
   var tried = 0;
 
