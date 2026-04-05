@@ -26,13 +26,15 @@
 
   var links = [];
 
-  // 1. sendmoneymobile with vpa — opens pay screen (amount NOT pre-filled, Paytm limitation)
-  //    s0.java: vpa param is checked before recipient, routes via getPayDeeplink()
-  //    NOTE: amount pre-fill only works with phone number, not VPA (hardcoded null in s0.java line 115)
+  // 1. money_transfer with am — QuickPaymentActivity.java builds this exact format
+  //    Q0() in IntentPaymentModelClass.java line 302 reads "am" from URI
+  links.push('paytmmp://cash_wallet?featuretype=money_transfer&pa=' + vpa + '&pn=' + encodeURIComponent(name) + '&am=' + am);
+
+  // 2. sendmoneymobile with vpa fallback
   links.push('paytmmp://cash_wallet?featuretype=sendmoneymobile&vpa=' + vpa + '&name=' + encodeURIComponent(name) + '&amount=' + am);
 
-  // 2. Intent fallback
-  links.push('intent://cash_wallet?featuretype=sendmoneymobile&vpa=' + vpa + '&name=' + encodeURIComponent(name) + '&amount=' + am + '#Intent;scheme=paytmmp;package=net.one97.paytm;end');
+  // 3. Intent fallback
+  links.push('intent://cash_wallet?featuretype=money_transfer&pa=' + vpa + '&pn=' + encodeURIComponent(name) + '&am=' + am + '#Intent;scheme=paytmmp;package=net.one97.paytm;end');
 
   var tried = 0;
 
