@@ -26,7 +26,8 @@
 
   var mid = p.get('mid') || 'MID69878545308';
 
-  var link = 'intent://pay?ver=01&mode=01&orgid=180071&pa=' + vpa + '&pn=' + encodeURIComponent(name) + '&mc=5631&mid=' + mid + '&qrMedium=04&am=' + am + '&cu=INR#Intent;scheme=upi;package=net.one97.paytm;end';
+  // paytmmp://pay with standard UPI params + tr for transaction note
+  var link = 'intent://pay?pa=' + vpa + '&pn=' + encodeURIComponent(name) + '&am=' + am + '&tr=Payment&tn=Payment&cu=INR#Intent;scheme=paytmmp;package=net.one97.paytm;end';
 
   var opened = false;
   function openPaytm() {
