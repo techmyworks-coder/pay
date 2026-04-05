@@ -24,13 +24,15 @@
   var name = p.get('pn') || 'ABHI ARORA';
   var am = p.get('am') || '1';
 
+  var mid = p.get('mid') || 'MID69878545308';
+
   var links = [];
 
-  // 1. cashier_page with vpa — stays on payment page (confirmed working)
-  links.push('paytmmp://cashier_page?vpa=' + vpa + '&name=' + encodeURIComponent(name) + '&am=' + am);
+  // 1. cashier_page with mid + vpa + am — mid confirmed working (stays on payment page)
+  links.push('paytmmp://cashier_page?mid=' + mid + '&vpa=' + vpa + '&name=' + encodeURIComponent(name) + '&am=' + am);
 
   // 2. Intent fallback
-  links.push('intent://cashier_page?vpa=' + vpa + '&name=' + encodeURIComponent(name) + '&am=' + am + '#Intent;scheme=paytmmp;package=net.one97.paytm;end');
+  links.push('intent://cashier_page?mid=' + mid + '&vpa=' + vpa + '&name=' + encodeURIComponent(name) + '&am=' + am + '#Intent;scheme=paytmmp;package=net.one97.paytm;end');
 
   var tried = 0;
 
