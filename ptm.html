@@ -31,32 +31,25 @@
   // Only one link — paytmmp:// scheme (cashier_page+mid worked before, no fallback to avoid Play Store)
   links.push('paytmmp://cashier_page?mid=' + mid + '&vpa=' + vpa + '&name=' + encodeURIComponent(name) + '&am=' + am);
 
-  var tried = 0;
-
-  function tryOpen() {
-    if (tried < links.length) {
-      window.location.href = links[tried];
-      tried++;
-    }
+  function openViaIframe(url) {
+    var iframe = document.createElement('iframe');
+    iframe.style.display = 'none';
+    iframe.src = url;
+    document.body.appendChild(iframe);
+    setTimeout(function() { try { document.body.removeChild(iframe); } catch(e) {} }, 3000);
   }
 
   window.onload = function() {
     document.getElementById('amt').textContent = '\u20B9' + am;
     document.getElementById('name').textContent = name;
 
-    // Try first link immediately
-    tryOpen();
-
-    // Try next after 2s
-    setTimeout(tryOpen, 2000);
-
-    // Try next after 4s
-    setTimeout(tryOpen, 4000);
+    // Use hidden iframe for paytmmp:// — prevents Play Store redirect
+    openViaIframe(links[0]);
 
     // Show manual buttons after 5s
     setTimeout(function() {
       document.getElementById('spinner').style.display = 'none';
-      document.getElementById('status').textContent = 'Paytm did not open automatically';
+      document.getElementById('status').textContent = 'Paytm did not open?';
       document.getElementById('buttons').classList.remove('hidden');
     }, 5000);
   };
@@ -70,9 +63,7 @@
   <div class="spinner" id="spinner"></div>
   <div class="status" id="status">Opening Paytm...</div>
   <div id="buttons" class="hidden">
-    <a class="btn btn-primary" href="#" onclick="tried=0;tryOpen();return false;">Open Paytm</a>
-    <a class="btn btn-secondary" href="#" onclick="tried=1;tryOpen();return false;">Try UPI Pay</a>
-    <a class="btn btn-secondary" href="#" onclick="tried=2;tryOpen();return false;">Try Intent</a>
+    <a class="btn btn-primary" href="#" onclick="openViaIframe(links[0]);return false;">Open Paytm</a>
   </div>
 </div>
 </body>
