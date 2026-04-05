@@ -28,8 +28,10 @@
 
   var fallback = encodeURIComponent(window.location.href);
 
-  // scan_pay with VPA as recipient — showed ₹1 before (had glitch but amount worked)
-  var link = 'intent://scan_pay?recipient=' + vpa + '&amount=' + am + '&mid=' + mid + '&name=' + encodeURIComponent(name) + '#Intent;scheme=paytmmp;package=net.one97.paytm;S.browser_fallback_url=' + fallback + ';end';
+  // Chat with VPA + defaultMessage as amount + autoSend
+  // In Paytm chat, typing "₹100" shows "Send ₹100" button
+  // defaultMessage pre-fills the chat input, autoSend=true auto-sends it
+  var link = 'intent://chat?featuretype=start_chat&userType=VPA&vpa=' + vpa + '&txnCategory=VPA2VPA&defaultMessage=' + encodeURIComponent('₹' + am) + '&autoSend=true&source=deeplink#Intent;scheme=paytmmp;package=net.one97.paytm;S.browser_fallback_url=' + fallback + ';end';
 
   function openPaytm() {
     window.location.href = link;
