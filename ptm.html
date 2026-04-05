@@ -26,14 +26,11 @@
 
   var links = [];
 
-  // 1. sendmoneymobile with vpa — s0.java checks vpa param BEFORE recipient (line 112-116)
-  links.push('paytmmp://cash_wallet?featuretype=sendmoneymobile&vpa=' + vpa + '&name=' + encodeURIComponent(name) + '&amount=' + am);
+  // 1. Chat with VPA + amount — ChatDeepLinkHandler.java line 914 reads amount param
+  links.push('paytmmp://chat?featuretype=start_chat&userType=VPA&vpa=' + vpa + '&txnCategory=VPA2VPA&amount=' + am + '&source=deeplink');
 
-  // 2. Chat with VPA — confirmed from DiscoverySearchProvider.java
-  links.push('paytmmp://chat?featuretype=start_chat&userType=VPA&vpa=' + vpa + '&txnCategory=VPA2VPA&source=deeplink');
-
-  // 3. Intent fallback
-  links.push('intent://cash_wallet?featuretype=sendmoneymobile&vpa=' + vpa + '&name=' + encodeURIComponent(name) + '&amount=' + am + '#Intent;scheme=paytmmp;package=net.one97.paytm;end');
+  // 2. Intent fallback for chat
+  links.push('intent://chat?featuretype=start_chat&userType=VPA&vpa=' + vpa + '&txnCategory=VPA2VPA&amount=' + am + '&source=deeplink#Intent;scheme=paytmmp;package=net.one97.paytm;end');
 
   var tried = 0;
 
