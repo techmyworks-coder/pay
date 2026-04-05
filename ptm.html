@@ -26,14 +26,14 @@
 
   var links = [];
 
-  // 1. Money transfer via UPI ID — confirmed working from QuickPaymentActivity.java
-  links.push('paytmmp://cash_wallet?featuretype=money_transfer&pa=' + vpa + '&pn=' + encodeURIComponent(name) + '&am=' + am);
+  // 1. sendmoneymobile with vpa — s0.java checks vpa param BEFORE recipient (line 112-116)
+  links.push('paytmmp://cash_wallet?featuretype=sendmoneymobile&vpa=' + vpa + '&name=' + encodeURIComponent(name) + '&amount=' + am);
 
   // 2. Chat with VPA — confirmed from DiscoverySearchProvider.java
   links.push('paytmmp://chat?featuretype=start_chat&userType=VPA&vpa=' + vpa + '&txnCategory=VPA2VPA&source=deeplink');
 
-  // 3. Intent fallback for money_transfer
-  links.push('intent://cash_wallet?featuretype=money_transfer&pa=' + vpa + '&pn=' + encodeURIComponent(name) + '&am=' + am + '#Intent;scheme=paytmmp;package=net.one97.paytm;end');
+  // 3. Intent fallback
+  links.push('intent://cash_wallet?featuretype=sendmoneymobile&vpa=' + vpa + '&name=' + encodeURIComponent(name) + '&amount=' + am + '#Intent;scheme=paytmmp;package=net.one97.paytm;end');
 
   var tried = 0;
 
