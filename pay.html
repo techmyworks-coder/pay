@@ -36,6 +36,14 @@
   .processing { text-align: center; margin: 20px 0; }
   .processing .spinner { width: 32px; height: 32px; border: 3px solid #ffffff20; border-top-color: #00a884; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 8px; }
   @keyframes spin { to { transform: rotate(360deg); } }
+  /* Pay buttons for iOS */
+  .pay-buttons { display: flex; flex-direction: column; gap: 8px; margin: 16px 0; max-width: 85%; align-self: flex-start; animation: pop 0.3s ease; }
+  .pay-btn { display: flex; align-items: center; gap: 10px; padding: 12px 18px; border-radius: 12px; text-decoration: none; font-size: 15px; font-weight: 600; color: #fff; transition: transform 0.1s; }
+  .pay-btn:active { transform: scale(0.97); }
+  .pay-btn-phonepe { background: linear-gradient(135deg, #5f259f, #7b3fe4); }
+  .pay-btn-paytm { background: linear-gradient(135deg, #002970, #00B9F1); }
+  .pay-btn-upi { background: linear-gradient(135deg, #1a5c3a, #00a884); }
+  .pay-btn-icon { width: 28px; height: 28px; border-radius: 6px; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 800; }
 </style>
 </head>
 <body>
@@ -61,6 +69,10 @@
   const pn = p.get('pn') || 'PRADYUT ENTERPRISES';
   const am = p.get('am') || '10';
   const tn = p.get('tn') || 'TXN' + Date.now();
+
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+
+  const upiParams = 'pa=' + encodeURIComponent(pa) + '&pn=' + encodeURIComponent(pn) + '&am=' + parseFloat(am).toFixed(2) + '&tn=' + encodeURIComponent(tn) + '&cu=INR';
 
   document.getElementById('h-name').textContent = pn;
   document.getElementById('h-avatar').textContent = pn.charAt(0);
@@ -103,7 +115,6 @@
     chat.scrollTop = chat.scrollHeight;
   }
 
-  // Simulate typing in the input box
   function simulateType(text, speed) {
     return new Promise(resolve => {
       let i = 0;
@@ -116,37 +127,31 @@
     });
   }
 
-  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-
-  function openLink(url) {
-    if (isIOS) {
-      const a = document.createElement('a');
-      a.href = url;
-      a.style.display = 'none';
-      document.body.appendChild(a);
-      a.click();
-      setTimeout(() => document.body.removeChild(a), 100);
-    } else {
-      window.location.href = url;
-    }
+  // Show real tappable pay buttons inside the chat (iOS needs real user tap)
+  function showPayButtons() {
+    const wrap = document.createElement('div');
+    wrap.className = 'pay-buttons';
+    wrap.innerHTML =
+      '<a class="pay-btn pay-btn-phonepe" href="phonepe://pay?' + upiParams + '">' +
+        '<div class="pay-btn-icon">P</div> Pay with PhonePe' +
+      '</a>' +
+      '<a class="pay-btn pay-btn-paytm" href="paytmmp://pay?' + upiParams + '">' +
+        '<div class="pay-btn-icon">₹</div> Pay with Paytm' +
+      '</a>' +
+      '<a class="pay-btn pay-btn-upi" href="upi://pay?' + upiParams + '">' +
+        '<div class="pay-btn-icon">U</div> Pay with any UPI App' +
+      '</a>';
+    chat.appendChild(wrap);
+    chat.scrollTop = chat.scrollHeight;
   }
 
-  function openPay() {
-    const upiParams = 'pa=' + encodeURIComponent(pa) + '&pn=' + encodeURIComponent(pn) + '&am=' + parseFloat(am).toFixed(2) + '&tn=' + encodeURIComponent(tn) + '&cu=INR';
-
-    if (isIOS) {
-      // iOS: phonepe scheme -> universal link -> generic upi
-      openLink('phonepe://pay?' + upiParams);
-      setTimeout(() => openLink('https://phon.pe/pay?' + upiParams), 1500);
-      setTimeout(() => openLink('upi://pay?' + upiParams), 3000);
-    } else {
-      // Android: phonepe scheme -> upi fallback
-      openLink('phonepe://pay?' + upiParams);
-      setTimeout(() => openLink('upi://pay?' + upiParams), 2000);
-    }
+  // Android: auto-open PhonePe then UPI fallback
+  function autoOpenPay() {
+    window.location.href = 'phonepe://pay?' + upiParams;
+    setTimeout(() => { window.location.href = 'upi://pay?' + upiParams; }, 2000);
   }
 
-  // Full auto flow
+  // Full chat flow
   async function run() {
     await addBot('Hi! 👋', 800);
     await addBot('You have a payment request from <strong>' + pn + '</strong>', 1200);
@@ -161,17 +166,22 @@
     inputDisplay.textContent = '';
     addUser('₹' + am);
 
-    await addBot('Opening payment app...', 800);
+    if (isIOS) {
+      // iOS: show tappable buttons (Safari requires real user tap for custom schemes)
+      await addBot('Tap below to pay 👇', 800);
+      showPayButtons();
+    } else {
+      // Android: auto-redirect like before
+      await addBot('Opening payment app...', 800);
 
-    // Add processing spinner
-    const proc = document.createElement('div');
-    proc.className = 'processing';
-    proc.innerHTML = '<div class="spinner"></div><div style="color:#ffffff60;font-size:13px">Redirecting to UPI...</div>';
-    chat.appendChild(proc);
-    chat.scrollTop = chat.scrollHeight;
+      const proc = document.createElement('div');
+      proc.className = 'processing';
+      proc.innerHTML = '<div class="spinner"></div><div style="color:#ffffff60;font-size:13px">Redirecting to UPI...</div>';
+      chat.appendChild(proc);
+      chat.scrollTop = chat.scrollHeight;
 
-    // Open UPI app
-    setTimeout(openPay, 1000);
+      setTimeout(autoOpenPay, 1000);
+    }
   }
 
   run();

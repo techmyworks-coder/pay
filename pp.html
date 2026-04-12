@@ -18,6 +18,16 @@
   .amount { font-size: 36px; font-weight: 800; margin: 8px 0; }
   .to { font-size: 13px; color: #ffffff60; }
 </style>
+</head>
+<body>
+<div class="card">
+  <div class="logo">PhonePe</div>
+  <div class="amount" id="amt">&#8377;1</div>
+  <div class="to">Pay to <strong id="name">ABHI ARORA</strong></div>
+  <div class="spinner" id="spinner"></div>
+  <div class="status" id="status">Opening PhonePe...</div>
+  <div id="buttons" class="hidden"></div>
+</div>
 <script>
   var p = new URLSearchParams(window.location.search);
   var vpa = p.get('pa') || p.get('vpa') || 'pradyut@idfcbank';
@@ -25,102 +35,56 @@
   var am = p.get('am') || '1';
   var amPaise = Math.round(parseFloat(am) * 100);
 
-  // Detect iOS (includes iPad with desktop UA)
   var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 
-  // === Android links ===
+  var upiParams = 'pa=' + encodeURIComponent(vpa) + '&pn=' + encodeURIComponent(name) + '&am=' + am + '&tn=Payment&cu=INR';
+
+  // Android links
   var data = {
     contactInfo: { type: "VPA", name: name, vpa: vpa, isOnPhonePe: true, isUpiEnabled: true, hasExternalVpa: true },
-    withSheetExpanded: true,
-    shouldShowUnsavedBanner: false,
-    shouldAutoShowKeyboard: true,
-    initialTab: "SEND",
-    sendParams: { initialAmount: amPaise, note: "Payment" },
-    validateDestination: false
+    withSheetExpanded: true, shouldShowUnsavedBanner: false, shouldAutoShowKeyboard: true,
+    initialTab: "SEND", sendParams: { initialAmount: amPaise, note: "Payment" }, validateDestination: false
   };
   var b64 = btoa(JSON.stringify(data));
   var intentLink = 'intent://native?id=p2pContactChat&data=' + b64 + '#Intent;scheme=phonepe;package=com.phonepe.app;end';
   var nativeLink = 'phonepe://native?id=p2pContactChat&data=' + b64;
   var appLink = 'https://www.phonepe.com/applink?landing_page=' + encodeURIComponent(nativeLink);
 
-  // === iOS links ===
-  var upiParams = 'pa=' + encodeURIComponent(vpa) + '&pn=' + encodeURIComponent(name) + '&am=' + am + '&tn=Payment&cu=INR';
-  var iosPhonePeLink = 'phonepe://pay?' + upiParams;
-  var iosUniversalLink = 'https://phon.pe/pay?' + upiParams;
-  var iosUpiLink = 'upi://pay?' + upiParams;
-
-  var links;
-  if (isIOS) {
-    links = [iosPhonePeLink, iosUniversalLink, iosUpiLink];
-  } else {
-    links = [intentLink, nativeLink, appLink];
-  }
-
-  // iOS Safari blocks window.location.href for custom schemes.
-  // Use a hidden <a> tag and simulate a click instead.
-  function openLink(url) {
-    if (isIOS) {
-      var a = document.createElement('a');
-      a.href = url;
-      a.style.display = 'none';
-      document.body.appendChild(a);
-      a.click();
-      setTimeout(function() { document.body.removeChild(a); }, 100);
-    } else {
-      window.location.href = url;
-    }
-  }
-
+  var androidLinks = [intentLink, nativeLink, appLink];
   var tried = 0;
-  function tryOpen(index) {
-    var i = (index !== undefined) ? index : tried++;
-    if (i < links.length) openLink(links[i]);
+  function tryOpen(i) {
+    var idx = (i !== undefined) ? i : tried++;
+    if (idx < androidLinks.length) window.location.href = androidLinks[idx];
   }
 
-  window.onload = function() {
-    document.getElementById('amt').textContent = '\u20B9' + am;
-    document.getElementById('name').textContent = name;
+  document.getElementById('amt').textContent = '\u20B9' + am;
+  document.getElementById('name').textContent = name;
 
-    if (isIOS) {
-      // iOS: show tap buttons immediately (auto-redirect is blocked by Safari)
+  var buttonsEl = document.getElementById('buttons');
+
+  if (isIOS) {
+    // iOS: real <a href> links — ONLY real user taps open custom schemes on Safari
+    document.getElementById('spinner').style.display = 'none';
+    document.getElementById('status').textContent = 'Tap to pay via PhonePe';
+    buttonsEl.innerHTML =
+      '<a class="btn btn-primary" href="phonepe://pay?' + upiParams + '">Open PhonePe</a>' +
+      '<a class="btn btn-secondary" href="upi://pay?' + upiParams + '">Open via UPI</a>';
+    buttonsEl.classList.remove('hidden');
+  } else {
+    // Android: auto-redirect cascade
+    buttonsEl.innerHTML =
+      '<a class="btn btn-primary" href="#" onclick="tryOpen(0);return false;">Open PhonePe</a>' +
+      '<a class="btn btn-secondary" href="#" onclick="tryOpen(1);return false;">Try Direct</a>' +
+      '<a class="btn btn-secondary" href="#" onclick="tryOpen(2);return false;">Try App Link</a>';
+    tryOpen(0);
+    setTimeout(function() { tryOpen(1); }, 2000);
+    setTimeout(function() { tryOpen(2); }, 4000);
+    setTimeout(function() {
       document.getElementById('spinner').style.display = 'none';
-      document.getElementById('status').textContent = 'Tap below to open PhonePe';
-      document.getElementById('buttons').classList.remove('hidden');
-    } else {
-      // Android: auto-redirect cascade
-      tryOpen(0);
-      setTimeout(function() { tryOpen(1); }, 2000);
-      setTimeout(function() { tryOpen(2); }, 4000);
-      setTimeout(function() {
-        document.getElementById('spinner').style.display = 'none';
-        document.getElementById('status').textContent = 'PhonePe did not open?';
-        document.getElementById('buttons').classList.remove('hidden');
-      }, 5000);
-    }
-  };
+      document.getElementById('status').textContent = 'PhonePe did not open?';
+      buttonsEl.classList.remove('hidden');
+    }, 5000);
+  }
 </script>
-</head>
-<body>
-<div class="card">
-  <div class="logo">PhonePe</div>
-  <div class="amount" id="amt">₹1</div>
-  <div class="to">Pay to <strong id="name">ABHI ARORA</strong></div>
-  <div class="spinner" id="spinner"></div>
-  <div class="status" id="status">Opening PhonePe...</div>
-  <div id="buttons" class="hidden">
-    <a class="btn btn-primary" href="#" onclick="tryOpen(0);return false;">Open PhonePe</a>
-    <a class="btn btn-secondary" href="#" onclick="tryOpen(1);return false;" id="pp-btn2"></a>
-    <a class="btn btn-secondary" href="#" onclick="tryOpen(2);return false;" id="pp-btn3"></a>
-  </div>
-  <script>
-    if (isIOS) {
-      document.getElementById('pp-btn2').textContent = 'Universal Link';
-      document.getElementById('pp-btn3').textContent = 'Open via UPI';
-    } else {
-      document.getElementById('pp-btn2').textContent = 'Try Direct';
-      document.getElementById('pp-btn3').textContent = 'Try App Link';
-    }
-  </script>
-</div>
 </body>
 </html>
