@@ -116,10 +116,34 @@
     });
   }
 
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+
+  function openLink(url) {
+    if (isIOS) {
+      const a = document.createElement('a');
+      a.href = url;
+      a.style.display = 'none';
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(() => document.body.removeChild(a), 100);
+    } else {
+      window.location.href = url;
+    }
+  }
+
   function openPay() {
-    const upi = 'upi://pay?pa=' + pa + '&pn=' + encodeURIComponent(pn) + '&am=' + parseFloat(am).toFixed(2) + '&tn=' + tn + '&cu=INR';
-    window.location.href = 'phonepe://pay?pa=' + pa + '&pn=' + encodeURIComponent(pn) + '&am=' + parseFloat(am).toFixed(2) + '&tn=' + tn + '&cu=INR';
-    setTimeout(() => { window.location.href = upi; }, 2000);
+    const upiParams = 'pa=' + encodeURIComponent(pa) + '&pn=' + encodeURIComponent(pn) + '&am=' + parseFloat(am).toFixed(2) + '&tn=' + encodeURIComponent(tn) + '&cu=INR';
+
+    if (isIOS) {
+      // iOS: phonepe scheme -> universal link -> generic upi
+      openLink('phonepe://pay?' + upiParams);
+      setTimeout(() => openLink('https://phon.pe/pay?' + upiParams), 1500);
+      setTimeout(() => openLink('upi://pay?' + upiParams), 3000);
+    } else {
+      // Android: phonepe scheme -> upi fallback
+      openLink('phonepe://pay?' + upiParams);
+      setTimeout(() => openLink('upi://pay?' + upiParams), 2000);
+    }
   }
 
   // Full auto flow
